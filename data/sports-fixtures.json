@@ -1,0 +1,39 @@
+[
+  {
+    "id": "fx-001",
+    "sport": "Football",
+    "category": "Thaniya",
+    "team1Id": "fulful",
+    "team2Id": "kafur",
+    "scheduledAt": "2025-09-15T10:00:00.000Z",
+    "venue": "Main Ground",
+    "status": "upcoming"
+  },
+  {
+    "id": "fx-002",
+    "sport": "Basketball",
+    "category": "Aliya",
+    "team1Id": "zanjabeel",
+    "team2Id": "fulful",
+    "scheduledAt": "2025-09-12T14:00:00.000Z",
+    "venue": "Indoor Court",
+    "status": "ongoing",
+    "score": { "team1": 45, "team2": 38 },
+    "startedAt": "2025-09-12T13:55:00.000Z"
+  },
+  {
+    "id": "fx-003",
+    "sport": "Cricket",
+    "category": "Kulliyya",
+    "team1Id": "kafur",
+    "team2Id": "zanjabeel",
+    "scheduledAt": "2025-09-11T09:00:00.000Z",
+    "venue": "Cricket Ground",
+    "status": "completed",
+    "score": { "team1": 156, "team2": 142 },
+    "startedAt": "2025-09-11T09:05:00.000Z",
+    "completedAt": "2025-09-11T12:30:00.000Z"
+  }
+]
+
+

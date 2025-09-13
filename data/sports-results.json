@@ -1,0 +1,15 @@
+[
+  {
+    "id": "fx-003",
+    "sport": "Cricket",
+    "category": "Kulliyya",
+    "team1Id": "kafur",
+    "team2Id": "zanjabeel",
+    "score": { "team1": 156, "team2": 142 },
+    "venue": "Cricket Ground",
+    "scheduledAt": "2025-09-11T09:00:00.000Z",
+    "completedAt": "2025-09-11T12:30:00.000Z"
+  }
+]
+
+

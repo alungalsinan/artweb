@@ -1,0 +1,31 @@
+[
+  {
+    "programmeId": "arts-1",
+    "programmeName": "Classical Dance Competition",
+    "positions": {
+      "first": { "team": "fulful", "points": 10 },
+      "second": { "team": "kafur", "points": 7 },
+      "third": { "team": "zanjabeel", "points": 5 }
+    }
+  },
+  {
+    "programmeId": "arts-2",
+    "programmeName": "Debate Competition",
+    "positions": {
+      "first": { "team": "kafur", "points": 10 },
+      "second": { "team": "fulful", "points": 7 },
+      "third": { "team": "zanjabeel", "points": 5 }
+    }
+  },
+  {
+    "programmeId": "arts-3",
+    "programmeName": "Poetry Recitation",
+    "positions": {
+      "first": { "team": "zanjabeel", "points": 10 },
+      "second": { "team": "fulful", "points": 7 },
+      "third": { "team": "kafur", "points": 5 }
+    }
+  }
+]
+
+

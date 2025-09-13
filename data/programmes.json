@@ -1,0 +1,26 @@
+[
+  {
+    "id": "prog-arts-001",
+    "name": "Classical Dance",
+    "category": "Aliya",
+    "type": "arts",
+    "venue": "Main Auditorium",
+    "scheduledAt": "2025-09-20T10:00:00.000Z",
+    "capacity": 50,
+    "description": "Solo classical dance competition",
+    "published": true
+  },
+  {
+    "id": "prog-arts-002",
+    "name": "Debate",
+    "category": "Thanawiyya",
+    "type": "arts",
+    "venue": "Conference Hall",
+    "scheduledAt": "2025-09-21T14:00:00.000Z",
+    "capacity": 60,
+    "description": "Team debate event",
+    "published": true
+  }
+]
+
+

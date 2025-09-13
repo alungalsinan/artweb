@@ -1,0 +1,28 @@
+[
+  {
+    "id": "fulful",
+    "name": "Fulful",
+    "slug": "fulful",
+    "logoUrl": "/placeholder-logo.svg",
+    "bio": "Fulful team represents excellence in arts and sports, known for teamwork and resilience.",
+    "achievements": ["Winners - Intercollege Football 2023", "Runners-up - Arts Fest 2024"]
+  },
+  {
+    "id": "kafur",
+    "name": "Kafur",
+    "slug": "kafur",
+    "logoUrl": "/placeholder-logo.svg",
+    "bio": "Kafur thrives on strategy and creativity across all events.",
+    "achievements": ["Winners - Debate Championship 2024", "Best Team Spirit Award"]
+  },
+  {
+    "id": "zanjabeel",
+    "name": "Zanjabeel",
+    "slug": "zanjabeel",
+    "logoUrl": "/placeholder-logo.svg",
+    "bio": "Zanjabeel blends passion with discipline in the field and on stage.",
+    "achievements": ["Champions - Basketball League 2024", "Top Points Scorers"]
+  }
+]
+
+
