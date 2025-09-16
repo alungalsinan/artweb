@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 import { AdminHeader } from "@/components/admin/admin-header"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
@@ -11,44 +11,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, Clock } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 
-// Mock data
-const mockProgrammes = [
-  {
-    id: "1",
-    name: "Classical Dance Competition",
-    category: "Aliya",
-    type: "arts" as const,
-    date: "March 20, 2024",
-    venue: "Main Auditorium",
-  },
-  {
-    id: "3",
-    name: "Football Tournament",
-    category: "Kulliyya",
-    type: "sports" as const,
-    date: "March 25, 2024",
-    venue: "Sports Ground",
-  },
-]
+interface Programme {
+  id: string
+  name: string
+  category: string
+  type: "arts" | "sports"
+  date: string
+  venue: string
+}
 
-const mockResults = [
-  {
-    id: "1",
-    programmeName: "Classical Dance Competition",
-    programmeId: "1",
-    category: "Aliya",
-    type: "arts" as const,
-    date: "March 20, 2024",
-    venue: "Main Auditorium",
-    positions: {
-      first: { participant: "Aisha Ahmed", team: "fulful", points: 10 },
-      second: { participant: "Sara Ali", team: "kafur", points: 7 },
-      third: { participant: "Fatima Hassan", team: "zanjabeel", points: 5 },
-    },
-    publishedAt: "2024-03-20T15:30:00Z",
-  },
-]
+interface Result {
+  id: string
+  programmeName: string
+  programmeId: string
+  category: string
+  type: "arts" | "sports"
+  date: string
+  venue: string
+  positions: {
+    first: { participant: string; team: string; points: number }
+    second: { participant: string; team: string; points: number }
+    third: { participant: string; team: string; points: number }
+  }
+  publishedAt: string
+}
 
 interface ResultFormData {
   programmeId: string
@@ -60,21 +48,90 @@ interface ResultFormData {
 export default function SuperAdminResultsPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("enter")
+  const [programmes, setProgrammes] = useState<Programme[]>([])
+  const [results, setResults] = useState<Result[]>([])
+  const { toast } = useToast()
+
+  useEffect(() => {
+    fetchProgrammes()
+    fetchResults()
+  }, [])
+
+  const fetchProgrammes = async () => {
+    try {
+      const res = await fetch("/api/programmes")
+      const { data } = await res.json()
+      setProgrammes(data)
+    } catch (error) {
+      console.error("Failed to fetch programmes", error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch programmes.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const fetchResults = async () => {
+    try {
+      const res = await fetch("/api/results")
+      const { data } = await res.json()
+      setResults(data.arts) // Assuming we are only dealing with arts results for now
+    } catch (error) {
+      console.error("Failed to fetch results", error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch results.",
+        variant: "destructive",
+      })
+    }
+  }
 
   const handleResultSubmit = async (data: ResultFormData) => {
     setIsLoading(true)
+    try {
+      const response = await fetch("/api/results", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+      if (!response.ok) {
+        const { error } = await response.json()
+        throw new Error(error || "Failed to publish result")
+      }
 
-    console.log("Publishing result:", data)
-
-    setIsLoading(false)
-    setActiveTab("published")
+      const { data: newResult } = await response.json()
+      setResults([...results, newResult])
+      toast({
+        title: "Success",
+        description: "Result published successfully.",
+      })
+      setActiveTab("published")
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to publish result.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const pendingProgrammes = mockProgrammes.filter(
-    (programme) => !mockResults.some((result) => result.programmeId === programme.id),
+  const pendingProgrammes = programmes.filter(
+    (programme) => !results.some((result) => result.programmeId === programme.id),
+  )
+
+  const totalPointsAwarded = results.reduce(
+    (sum, result) =>
+      sum +
+      result.positions.first.points +
+      result.positions.second.points +
+      result.positions.third.points,
+    0,
   )
 
   return (
@@ -99,7 +156,7 @@ export default function SuperAdminResultsPage() {
                     <Trophy className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{mockResults.length}</div>
+                    <div className="text-2xl font-bold">{results.length}</div>
                     <p className="text-xs text-muted-foreground">Results published</p>
                   </CardContent>
                 </Card>
@@ -119,16 +176,7 @@ export default function SuperAdminResultsPage() {
                     <Badge className="h-4 w-4" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {mockResults.reduce(
-                        (sum, result) =>
-                          sum +
-                          result.positions.first.points +
-                          result.positions.second.points +
-                          result.positions.third.points,
-                        0,
-                      )}
-                    </div>
+                    <div className="text-2xl font-bold">{totalPointsAwarded}</div>
                     <p className="text-xs text-muted-foreground">Points distributed</p>
                   </CardContent>
                 </Card>
@@ -163,9 +211,9 @@ export default function SuperAdminResultsPage() {
                 </TabsContent>
 
                 <TabsContent value="published" className="space-y-6">
-                  {mockResults.length > 0 ? (
+                  {results.length > 0 ? (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                      {mockResults.map((result) => (
+                      {results.map((result) => (
                         <ResultCard key={result.id} result={result} showActions={true} />
                       ))}
                     </div>
@@ -188,7 +236,7 @@ export default function SuperAdminResultsPage() {
                           <CardHeader>
                             <CardTitle className="text-lg">{programme.name}</CardTitle>
                             <CardDescription>
-                              {programme.date} • {programme.venue}
+                              {new Date(programme.date).toLocaleDateString()} • {programme.venue}
                             </CardDescription>
                           </CardHeader>
                           <CardContent>

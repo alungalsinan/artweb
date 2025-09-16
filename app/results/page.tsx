@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
 import { ResultCard } from "@/components/results/result-card"
 import { Input } from "@/components/ui/input"
@@ -8,66 +8,53 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Search, Trophy } from "lucide-react"
 
-// Mock results data
-const mockResults = [
-  {
-    id: "1",
-    programmeName: "Classical Dance Competition",
-    programmeId: "1",
-    category: "Aliya",
-    type: "arts" as const,
-    date: "March 20, 2024",
-    venue: "Main Auditorium",
-    positions: {
-      first: { participant: "Aisha Ahmed", team: "fulful", points: 10 },
-      second: { participant: "Sara Ali", team: "kafur", points: 7 },
-      third: { participant: "Fatima Hassan", team: "zanjabeel", points: 5 },
-    },
-    publishedAt: "2024-03-20T15:30:00Z",
-  },
-  {
-    id: "2",
-    programmeName: "Debate Competition",
-    programmeId: "2",
-    category: "Thanawiyya",
-    type: "arts" as const,
-    date: "March 22, 2024",
-    venue: "Conference Hall",
-    positions: {
-      first: { participant: "Omar Khalil", team: "kafur", points: 10 },
-      second: { participant: "Ahmed Rashid", team: "fulful", points: 7 },
-      third: { participant: "Yusuf Ibrahim", team: "zanjabeel", points: 5 },
-    },
-    publishedAt: "2024-03-22T16:45:00Z",
-  },
-  {
-    id: "3",
-    programmeName: "Poetry Recitation",
-    programmeId: "4",
-    category: "Uoola",
-    type: "arts" as const,
-    date: "March 18, 2024",
-    venue: "Library Hall",
-    positions: {
-      first: { participant: "Mariam Noor", team: "zanjabeel", points: 10 },
-      second: { participant: "Layla Saeed", team: "fulful", points: 7 },
-      third: { participant: "Nadia Farouk", team: "kafur", points: 5 },
-    },
-    publishedAt: "2024-03-18T14:20:00Z",
-  },
-]
+interface Result {
+  id: string
+  programmeName: string
+  programmeId: string
+  category: string
+  type: "arts" | "sports"
+  date: string
+  venue: string
+  positions: {
+    first: { participant: string; team: string; points: number }
+    second: { participant: string; team: string; points: number }
+    third: { participant: string; team: string; points: number }
+  }
+  publishedAt: string
+}
 
 const categories = ["All", "Bidaya", "Uoola", "Thaniya", "Thanawiyya", "Aliya", "Kulliyya"]
 const types = ["All", "Arts", "Sports"]
 const teams = ["All", "Fulful", "Kafur", "Zanjabeel"]
 
 export default function ResultsPage() {
+  const [results, setResults] = useState<Result[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedType, setSelectedType] = useState("All")
   const [selectedTeam, setSelectedTeam] = useState("All")
 
-  const filteredResults = mockResults.filter((result) => {
+  useEffect(() => {
+    fetchResults()
+  }, [])
+
+  const fetchResults = async () => {
+    try {
+      const res = await fetch("/api/results")
+      const { data } = await res.json()
+      // For now, we only display arts results as the result card is not compatible with sports results.
+      const formattedResults = data.arts.map((r: any) => ({
+        ...r,
+        date: new Date(r.date).toLocaleDateString(),
+      }))
+      setResults(formattedResults)
+    } catch (error) {
+      console.error("Failed to fetch results", error)
+    }
+  }
+
+  const filteredResults = results.filter((result) => {
     const matchesSearch = result.programmeName.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = selectedCategory === "All" || result.category === selectedCategory
     const matchesType =
@@ -82,9 +69,9 @@ export default function ResultsPage() {
   })
 
   const stats = {
-    total: mockResults.length,
-    arts: mockResults.filter((r) => r.type === "arts").length,
-    sports: mockResults.filter((r) => r.type === "sports").length,
+    total: results.length,
+    arts: results.filter((r) => r.type === "arts").length,
+    sports: results.filter((r) => r.type === "sports").length,
   }
 
   return (
@@ -169,7 +156,7 @@ export default function ResultsPage() {
         {/* Results */}
         <div className="mb-4">
           <p className="text-muted-foreground">
-            Showing {filteredResults.length} of {mockResults.length} results
+            Showing {filteredResults.length} of {results.length} results
           </p>
         </div>
 

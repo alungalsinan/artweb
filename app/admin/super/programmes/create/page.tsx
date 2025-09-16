@@ -9,35 +9,59 @@ import { ProgrammeForm } from "@/components/programmes/programme-form"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/components/ui/use-toast"
 
 interface ProgrammeFormData {
   name: string
   category: string
   type: "arts" | "sports"
-  date: string
-  time: string
+  scheduledAt: string
   venue: string
   description: string
   maxParticipants: string
-  language: string
-  judges: string[]
+  judges: string
   registrationOpen: boolean
 }
 
 export default function CreateProgrammePage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
 
   const handleSubmit = async (data: ProgrammeFormData) => {
     setIsLoading(true)
+    try {
+      const response = await fetch("/api/programmes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...data,
+          judges: data.judges.split(",").map((j) => j.trim()),
+          maxParticipants: data.maxParticipants ? parseInt(data.maxParticipants, 10) : undefined,
+        }),
+      })
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+      if (!response.ok) {
+        const { error } = await response.json()
+        throw new Error(error || "Failed to create programme")
+      }
 
-    console.log("Creating programme:", data)
-
-    // Redirect back to programmes list
-    router.push("/admin/super/programmes")
+      toast({
+        title: "Success",
+        description: "Programme created successfully.",
+      })
+      router.push("/admin/super/programmes")
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create programme.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
