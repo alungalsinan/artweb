@@ -4,7 +4,8 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Trophy, Calendar, Users, BarChart3, Settings, Palette, Camera } from "lucide-react"
+import { useTheme } from "next-themes"
+import { Moon, Sun, Menu, Trophy, Calendar, Users, BarChart3, Settings, Palette, Camera } from "lucide-react"
 
 const navigation = [
   { name: "Home", href: "/", icon: Trophy },
@@ -52,6 +53,8 @@ export function Navigation() {
             <Link href="/admin">Admin Panel</Link>
           </Button>
 
+          <ThemeToggleButton />
+
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -98,5 +101,21 @@ export function Navigation() {
         </div>
       </div>
     </header>
+  )
+}
+
+function ThemeToggleButton() {
+  const { theme, setTheme } = useTheme()
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      aria-label="Toggle theme"
+    >
+      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+    </Button>
   )
 }

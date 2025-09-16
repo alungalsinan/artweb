@@ -17,13 +17,11 @@ interface ProgrammeFormData {
   name: string
   category: string
   type: "arts" | "sports"
-  date: string
-  time: string
+  scheduledAt: string
   venue: string
   description: string
   maxParticipants: string
-  language: string
-  judges: string[]
+  judges: string
   registrationOpen: boolean
 }
 
@@ -36,45 +34,22 @@ interface ProgrammeFormProps {
 
 const categories = ["Bidaya", "Uoola", "Thaniya", "Thanawiyya", "Aliya", "Kulliyya"]
 
-const languages = ["Arabic", "English", "Malayalam", "Any"]
-
 export function ProgrammeForm({ initialData, onSubmit, isLoading = false, mode }: ProgrammeFormProps) {
   const [formData, setFormData] = useState<ProgrammeFormData>({
     name: initialData?.name || "",
     category: initialData?.category || "",
     type: initialData?.type || "arts",
-    date: initialData?.date || "",
-    time: initialData?.time || "",
+    scheduledAt: initialData?.scheduledAt || "",
     venue: initialData?.venue || "",
     description: initialData?.description || "",
     maxParticipants: initialData?.maxParticipants || "",
-    language: initialData?.language || "",
-    judges: initialData?.judges || [],
+    judges: initialData?.judges || "",
     registrationOpen: initialData?.registrationOpen ?? true,
   })
-
-  const [newJudge, setNewJudge] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onSubmit(formData)
-  }
-
-  const addJudge = () => {
-    if (newJudge.trim() && !formData.judges.includes(newJudge.trim())) {
-      setFormData({
-        ...formData,
-        judges: [...formData.judges, newJudge.trim()],
-      })
-      setNewJudge("")
-    }
-  }
-
-  const removeJudge = (judge: string) => {
-    setFormData({
-      ...formData,
-      judges: formData.judges.filter((j) => j !== judge),
-    })
   }
 
   return (
@@ -115,43 +90,23 @@ export function ProgrammeForm({ initialData, onSubmit, isLoading = false, mode }
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select
-                value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="language">Language</Label>
-              <Select
-                value={formData.language}
-                onValueChange={(value) => setFormData({ ...formData, language: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {languages.map((language) => (
-                    <SelectItem key={language} value={language}>
-                      {language}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="category">Category</Label>
+            <Select
+              value={formData.category}
+              onValueChange={(value) => setFormData({ ...formData, category: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
@@ -166,24 +121,14 @@ export function ProgrammeForm({ initialData, onSubmit, isLoading = false, mode }
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="scheduledAt">Date & Time</Label>
               <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="time">Time</Label>
-              <Input
-                id="time"
-                type="time"
-                value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                id="scheduledAt"
+                type="datetime-local"
+                value={formData.scheduledAt}
+                onChange={(e) => setFormData({ ...formData, scheduledAt: e.target.value })}
                 required
               />
             </div>
@@ -212,30 +157,14 @@ export function ProgrammeForm({ initialData, onSubmit, isLoading = false, mode }
           </div>
 
           <div className="space-y-2">
-            <Label>Judges</Label>
-            <div className="flex gap-2">
-              <Input
-                value={newJudge}
-                onChange={(e) => setNewJudge(e.target.value)}
-                placeholder="Enter judge name"
-                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addJudge())}
-              />
-              <Button type="button" onClick={addJudge} size="sm">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-            {formData.judges.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formData.judges.map((judge) => (
-                  <Badge key={judge} variant="secondary" className="flex items-center gap-1">
-                    {judge}
-                    <button type="button" onClick={() => removeJudge(judge)} className="ml-1 hover:text-destructive">
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
+            <Label htmlFor="judges">Judges</Label>
+            <Textarea
+              id="judges"
+              value={formData.judges}
+              onChange={(e) => setFormData({ ...formData, judges: e.target.value })}
+              placeholder="Enter judge names, separated by commas"
+              rows={2}
+            />
           </div>
 
           <div className="flex items-center space-x-2">

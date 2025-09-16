@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     requireSuperAdmin(user)
     const body = await req.json()
     const parsed = ProgrammeCreateSchema.parse(body)
-    const created = await ProgrammeStore.upsert(parsed)
+    const created = await ProgrammeStore.upsert({ ...parsed, id: `prog-${Date.now()}` })
     return NextResponse.json({ data: created }, { status: 201 })
   } catch (e: any) {
     const status = e?.status || (e?.name === "ZodError" ? 400 : 500)
